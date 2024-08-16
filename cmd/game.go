@@ -58,7 +58,7 @@ func exploreLabyrinth(currentGame *models.Game) {
 		} else if input == "help" {
 			showHelp()
 		} else {
-			green.Println("I'm not sure what you mean... type help for help.")
+			green.Println("I'm not sure what you mean... type help for available commands.")
 		}
 	}
 }
@@ -109,7 +109,7 @@ func getYN(q string) string {
 }
 
 func showHelp() {
-	green.Println(`Enter a command:
+	green.Println(`Available commands:
     - n/s/e/w : move in a direction
     - map : show a map of the labyrinth
     - look : look around and describe you environment
