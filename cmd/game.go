@@ -17,11 +17,7 @@ func PlayGame() {
 
 	adventurer := models.NewPlayer()
 	currentGame := models.NewGame(*adventurer)
-	room := models.NewRoom(
-		"This is an empty room.",
-		"You hear water dripping.",
-		"There is a musty smell in the air.",
-	)
+	room := models.NewRoom()
 	currentGame.Room = *room
 
 	welcome()
