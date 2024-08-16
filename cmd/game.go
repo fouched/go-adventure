@@ -45,7 +45,7 @@ func welcome() {
 
 func exploreLabyrinth(currentGame *models.Game) {
 
-	for true {
+	for {
 		currentGame.Room.PrintDescription()
 
 		var input string
@@ -79,7 +79,7 @@ func getYN(q string) string {
 	answer := ""
 	options := []string{"yes", "no", "y", "n"}
 
-	for true {
+	for {
 		var input string
 		cyan.Print(q + " (yes/no) -> ")
 		fmt.Scanln(&input)
