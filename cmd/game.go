@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/fatih/color"
+	"github.com/fouched/go-adventure/internal/models"
 	"os"
 	"strings"
 )
@@ -13,11 +14,22 @@ var yellow = color.New(color.FgYellow)
 var cyan = color.New(color.FgCyan)
 
 func PlayGame() {
+
+	adventurer := models.NewPlayer()
+	currentGame := models.NewGame(*adventurer)
+	room := models.NewRoom(
+		"This is an empty room.",
+		"You hear water dripping.",
+		"There is a musty smell in the air.",
+	)
+	currentGame.Room = *room
+
 	welcome()
 	green.Print("Press enter to begin...")
 	var input string
 	fmt.Scanln(&input)
-	exploreLabyrinth()
+
+	exploreLabyrinth(currentGame)
 }
 
 func welcome() {
@@ -31,9 +43,11 @@ func welcome() {
 	`)
 }
 
-func exploreLabyrinth() {
+func exploreLabyrinth(currentGame *models.Game) {
 
 	for true {
+		currentGame.Room.PrintDescription()
+
 		var input string
 		yellow.Print("-> ")
 		fmt.Scanln(&input)
