@@ -6,6 +6,8 @@ type Room struct {
 	Description string
 	Sound       string
 	Smell       string
+	Items       []ArmoryItem
+	Monster     *Monster
 }
 
 var descriptions = []string{

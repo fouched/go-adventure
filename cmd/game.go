@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/fatih/color"
 	"github.com/fouched/go-adventure/internal/models"
+	"math/rand/v2"
 	"os"
 	"slices"
 	"strings"
@@ -40,12 +41,41 @@ func welcome() {
 	`)
 }
 
+func generateRoom() *models.Room {
+
+	room := models.NewRoom()
+
+	// there is a 25% chance that this room has an item
+	if rand.IntN(100) < 26 {
+		a := models.GetAllArmory()
+		item := a[rand.IntN(len(a))]
+		room.Items = append(room.Items, item)
+	}
+
+	// there is a 25% chance that this room has a monster
+	if rand.IntN(100) < 26 {
+		m := models.GetAllMonsters()
+		monster := m[rand.IntN(len(m))]
+		room.Monster = &monster
+	}
+
+	return room
+}
+
 func exploreLabyrinth(currentGame *models.Game) {
 
 	for {
-		room := models.NewRoom()
+		room := generateRoom()
 		currentGame.Room = *room
 		currentGame.Room.PrintDescription()
+
+		for _, item := range room.Items {
+			yellow.Printf("You see a %s\n", item.Name)
+		}
+
+		if currentGame.Room.Monster != nil {
+			red.Printf("There is a %s here!\n", currentGame.Room.Monster.Name)
+		}
 
 		var input string
 		yellow.Print("-> ")
