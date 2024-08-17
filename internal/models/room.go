@@ -9,13 +9,13 @@ type Room struct {
 }
 
 var descriptions = []string{
-	"Whatever furniture used to adorn this chamber has long since been carried away. It is completely empty, save for a few splinters of rotted wood and some lichen. ",
+	"Whatever furniture used to adorn this chamber has long since been carried away. \nIt is completely empty, save for a few splinters of rotted wood and some lichen. ",
 	"This room appears to have once been a barracks of some sort, if the remnants of the cots lining each wall are any indication. ",
 	"Based on the rusted implements littering the floor, this room must have been a torture chamber of some sort in the distant past. ",
 	"The flickering light from your torch does little to lighten the dim hallway you move through. ",
 	"It is impossible to tell just what this location might have been in the past, but bones are strewn everywhere.",
 	"Scattered bits of bone, armor, and rusted weaponry suggest that a major battle took place here long ago.",
-	"From the scorch marks on the walls and floor, it appears that something burned here not too long ago. Given the amount of scorching, it must have been a huge blaze.",
+	"From the scorch marks on the walls and floor, it appears that something burned here not too long ago. \nGiven the amount of scorching, it must have been a huge blaze.",
 }
 
 var sounds = []string{

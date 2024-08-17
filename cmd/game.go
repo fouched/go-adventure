@@ -5,6 +5,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/fouched/go-adventure/internal/models"
 	"os"
+	"slices"
 	"strings"
 )
 
@@ -13,12 +14,12 @@ var green = color.New(color.FgGreen)
 var yellow = color.New(color.FgYellow)
 var cyan = color.New(color.FgCyan)
 
+var directions = []string{"n", "s", "e", "w"}
+
 func PlayGame() {
 
 	adventurer := models.NewPlayer()
 	currentGame := models.NewGame(*adventurer)
-	room := models.NewRoom()
-	currentGame.Room = *room
 
 	welcome()
 	green.Print("Press enter to begin...")
@@ -42,6 +43,8 @@ func welcome() {
 func exploreLabyrinth(currentGame *models.Game) {
 
 	for {
+		room := models.NewRoom()
+		currentGame.Room = *room
 		currentGame.Room.PrintDescription()
 
 		var input string
@@ -51,10 +54,13 @@ func exploreLabyrinth(currentGame *models.Game) {
 		if input == "quit" {
 			green.Println("Overcome with terror, you flee the dungeon.")
 			playAgain()
+		} else if slices.Contains(directions, input) {
+			cyan.Println("You move deeper into the dungeon.")
+			continue
 		} else if input == "help" {
 			showHelp()
 		} else {
-			green.Println("I'm not sure what you mean... type help for available commands.")
+			red.Println("I'm not sure what you mean... type help for available commands.")
 		}
 	}
 }
