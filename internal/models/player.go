@@ -6,6 +6,7 @@ type Player struct {
 	MonstersDefeated int
 	XP               int
 	Turns            int
+	Inventory        []ArmoryItem
 }
 
 func NewPlayer() *Player {
@@ -15,5 +16,6 @@ func NewPlayer() *Player {
 		MonstersDefeated: 0,
 		XP:               0,
 		Turns:            0,
+		Inventory:        []ArmoryItem{},
 	}
 }

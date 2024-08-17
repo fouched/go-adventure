@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/fatih/color"
 	"github.com/fouched/go-adventure/internal/models"
@@ -23,7 +24,7 @@ func PlayGame() {
 	currentGame := models.NewGame(*adventurer)
 
 	welcome()
-	green.Print("Press enter to begin...")
+	cyan.Print("Press enter to begin...")
 	var input string
 	fmt.Scanln(&input)
 
@@ -31,6 +32,7 @@ func PlayGame() {
 }
 
 func welcome() {
+
 	red.Println("                                                  D U N G E O N")
 	green.Println(`
     The village of Honeywood has been terrorized by strange, deadly creatures for months now. Unable to endure any 
@@ -46,7 +48,7 @@ func generateRoom() *models.Room {
 	room := models.NewRoom()
 
 	// there is a 25% chance that this room has an item
-	if rand.IntN(100) < 26 {
+	if rand.IntN(100) < 99 {
 		a := models.GetAllArmory()
 		item := a[rand.IntN(len(a))]
 		room.Items = append(room.Items, item)
@@ -79,7 +81,7 @@ func exploreLabyrinth(currentGame *models.Game) {
 
 		var input string
 		yellow.Print("-> ")
-		fmt.Scanln(&input)
+		input = readInput(input)
 
 		if input == "quit" {
 			green.Println("Overcome with terror, you flee the dungeon.")
@@ -89,13 +91,62 @@ func exploreLabyrinth(currentGame *models.Game) {
 			continue
 		} else if input == "help" {
 			showHelp()
+		} else if strings.HasPrefix(input, "get") {
+			if currentGame.Room.Items == nil {
+				cyan.Println("There is nothing to pick up")
+			} else {
+				getAnItem(currentGame, input)
+			}
 		} else {
 			red.Println("I'm not sure what you mean... type help for available commands.")
 		}
 	}
 }
 
+func readInput(input string) string {
+
+	reader := bufio.NewReader(os.Stdin)
+	input, _ = reader.ReadString('\n')
+	input = strings.TrimSuffix(input, "\n")
+	input = strings.TrimSuffix(input, "\r")
+	return strings.TrimSpace(strings.ToLower(input))
+}
+
+func getAnItem(game *models.Game, input string) {
+
+	itemToGet := strings.TrimPrefix(input, "get")
+
+	if len(game.Room.Items) > 0 && itemToGet == "" {
+		itemToGet = game.Room.Items[0].Name
+	} else {
+		itemToGet = strings.TrimPrefix(itemToGet, " ")
+	}
+
+	for _, item := range game.Player.Inventory {
+		if item.Name == itemToGet {
+			cyan.Printf("You already have a %s, and decide you don't need another.\n", item.Name)
+			return
+		}
+	}
+
+	idx := -1
+	for i, roomItem := range game.Room.Items {
+		if roomItem.Name == itemToGet {
+			idx = i
+		}
+	}
+
+	if idx > -1 {
+		game.Player.Inventory = append(game.Player.Inventory, game.Room.Items[idx])
+		game.Room.Items = append(game.Room.Items[:idx], game.Room.Items[idx+1:]...)
+		cyan.Printf("You pick up the %s.\n", itemToGet)
+	} else {
+		red.Printf("There is no %s here\n", itemToGet)
+	}
+}
+
 func playAgain() {
+
 	yn := getYN("Play again")
 	if yn == "yes" {
 		PlayGame()
@@ -141,6 +192,7 @@ func getYN(q string) string {
 }
 
 func showHelp() {
+
 	green.Println(`Available commands:
     - n/s/e/w : move in a direction
     - map : show a map of the labyrinth
