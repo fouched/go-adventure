@@ -84,7 +84,7 @@ func exploreLabyrinth(currentGame *models.Game) {
 		input = readInput(input)
 
 		if input == "quit" {
-			green.Println("Overcome with terror, you flee the dungeon.")
+			yellow.Println("Overcome with terror, you flee the dungeon.")
 			playAgain()
 		} else if slices.Contains(directions, input) {
 			cyan.Println("You move deeper into the dungeon.")
@@ -97,9 +97,19 @@ func exploreLabyrinth(currentGame *models.Game) {
 			} else {
 				getAnItem(currentGame, input)
 			}
+		} else if input == "inventory" || input == "inv" {
+			showInventory(currentGame)
+			continue
 		} else {
 			red.Println("I'm not sure what you mean... type help for available commands.")
 		}
+	}
+}
+
+func showInventory(currentGame *models.Game) {
+	cyan.Println("Your inventory:")
+	for _, item := range currentGame.Player.Inventory {
+		cyan.Printf("    - %s\n", item.Name)
 	}
 }
 
@@ -151,7 +161,7 @@ func playAgain() {
 	if yn == "yes" {
 		PlayGame()
 	} else {
-		green.Println("Until next time, adventurer.")
+		yellow.Println("Until next time, adventurer.")
 		os.Exit(0)
 	}
 }
@@ -177,7 +187,7 @@ func getYN(q string) string {
 		}
 
 		if !valid {
-			cyan.Println("Please enter yes or no.")
+			cyan.Println("Please enter yes (y) or no (n).")
 		} else {
 			if answer == "y" {
 				answer = "yes"
@@ -194,7 +204,7 @@ func getYN(q string) string {
 func showHelp() {
 
 	green.Println(`Available commands:
-    - n/s/e/w : move in a direction
+    - n / s / e / w : move in a direction
     - map : show a map of the labyrinth
     - look : look around and describe you environment
     - equip <item> : use an item from your inventory
@@ -204,7 +214,7 @@ func showHelp() {
     - get <item> : pick up an item
     - drop <item> : drop an item
     - rest : restore health by resting
-    - inventory : show current inventory
+    - inventory / inv : show current inventory
     - status : show current player status
     - quit : end the game`)
 }
