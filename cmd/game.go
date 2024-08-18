@@ -22,12 +22,15 @@ func PlayGame() {
 
 	adventurer := models.NewPlayer()
 	currentGame := models.NewGame(*adventurer)
-
+	room := generateRoom()
+	currentGame.Room = *room
 	welcome()
-	cyan.Print("Press enter to begin...")
+
+	// get the player input
+	cyan.Println("Press enter to begin...")
 	var input string
 	fmt.Scanln(&input)
-
+	currentGame.Room.PrintDescription()
 	exploreLabyrinth(currentGame)
 }
 
@@ -67,11 +70,8 @@ func generateRoom() *models.Room {
 func exploreLabyrinth(currentGame *models.Game) {
 
 	for {
-		room := generateRoom()
-		currentGame.Room = *room
-		currentGame.Room.PrintDescription()
 
-		for _, item := range room.Items {
+		for _, item := range currentGame.Room.Items {
 			yellow.Printf("You see a %s\n", item.Name)
 		}
 
@@ -83,26 +83,34 @@ func exploreLabyrinth(currentGame *models.Game) {
 		yellow.Print("-> ")
 		input = readInput(input)
 
-		if input == "quit" {
-			yellow.Println("Overcome with terror, you flee the dungeon.")
-			playAgain()
-		} else if slices.Contains(directions, input) {
-			cyan.Println("You move deeper into the dungeon.")
-			continue
-		} else if input == "help" {
+		// process input
+		if input == "help" {
 			showHelp()
+			continue
 		} else if strings.HasPrefix(input, "get") {
 			if currentGame.Room.Items == nil {
 				cyan.Println("There is nothing to pick up")
+				continue
 			} else {
 				getAnItem(currentGame, input)
+				continue
 			}
 		} else if input == "inventory" || input == "inv" {
 			showInventory(currentGame)
 			continue
+		} else if slices.Contains(directions, input) {
+			cyan.Println("You move deeper into the dungeon.")
+		} else if input == "quit" {
+			yellow.Println("Overcome with terror, you flee the dungeon.")
+			playAgain()
 		} else {
-			red.Println("I'm not sure what you mean... type help for available commands.")
+			cyan.Println("I'm not sure what you mean... type help for available commands.")
+			continue
 		}
+
+		currentGame.Room = *generateRoom()
+		currentGame.Room.PrintDescription()
+
 	}
 }
 
