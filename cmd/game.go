@@ -242,7 +242,7 @@ func showHelp() {
     - get <item> : pick up an item
     - drop <item> : drop an item
     - rest : restore health by resting
-    - inventory / inv : show current inventory
+    - inv/ inventory : show current inventory
     - status : show current player status
     - q / quit : end the game`)
 }
