@@ -54,7 +54,7 @@ func generateRoom() *models.Room {
 	if rand.IntN(100) < 99 {
 		a := models.GetAllArmory()
 		item := a[rand.IntN(len(a))]
-		room.Items = append(room.Items, item)
+		room.Items[item.Name] = item
 	}
 
 	// there is a 25% chance that this room has a monster
@@ -72,7 +72,7 @@ func exploreLabyrinth(currentGame *models.Game) {
 	for {
 
 		for _, item := range currentGame.Room.Items {
-			yellow.Printf("You see a %s\n", item.Name)
+			cyan.Printf("You see a %s\n", item.Name)
 		}
 
 		if currentGame.Room.Monster != nil {
@@ -87,6 +87,9 @@ func exploreLabyrinth(currentGame *models.Game) {
 		if input == "help" {
 			showHelp()
 			continue
+		} else if input == "look" {
+			currentGame.Room.PrintDescription()
+			continue
 		} else if strings.HasPrefix(input, "get") {
 			if currentGame.Room.Items == nil {
 				cyan.Println("There is nothing to pick up")
@@ -95,12 +98,15 @@ func exploreLabyrinth(currentGame *models.Game) {
 				getAnItem(currentGame, input)
 				continue
 			}
+		} else if strings.HasPrefix(input, "drop") {
+			dropAnItem(currentGame, strings.TrimPrefix(input, "drop "))
+			continue
 		} else if input == "inventory" || input == "inv" {
 			showInventory(currentGame)
 			continue
 		} else if slices.Contains(directions, input) {
 			cyan.Println("You move deeper into the dungeon.")
-		} else if input == "quit" {
+		} else if input == "q" || input == "quit" {
 			yellow.Println("Overcome with terror, you flee the dungeon.")
 			playAgain()
 		} else {
@@ -111,6 +117,18 @@ func exploreLabyrinth(currentGame *models.Game) {
 		currentGame.Room = *generateRoom()
 		currentGame.Room.PrintDescription()
 
+	}
+}
+
+func dropAnItem(game *models.Game, input string) {
+
+	item, ok := game.Player.Inventory[input]
+	if ok {
+		delete(game.Player.Inventory, input)
+		cyan.Printf("You drop the %s\n", item.Name)
+		game.Room.Items[item.Name] = item
+	} else {
+		red.Printf("You are not carrying a %s\n", input)
 	}
 }
 
@@ -134,33 +152,35 @@ func getAnItem(game *models.Game, input string) {
 
 	itemToGet := strings.TrimPrefix(input, "get")
 
+	// cater for getting any item in a room - the user just typed get
 	if len(game.Room.Items) > 0 && itemToGet == "" {
-		itemToGet = game.Room.Items[0].Name
+		for _, item := range game.Room.Items {
+			itemToGet = item.Name
+			continue
+		}
 	} else {
 		itemToGet = strings.TrimPrefix(itemToGet, " ")
 	}
 
-	for _, item := range game.Player.Inventory {
-		if item.Name == itemToGet {
-			cyan.Printf("You already have a %s, and decide you don't need another.\n", item.Name)
-			return
-		}
+	playerItem, ok := game.Player.Inventory[itemToGet]
+	if ok {
+		cyan.Printf("You already have a %s, and decide you don't need another.\n", playerItem.Name)
+		return
 	}
 
-	idx := -1
-	for i, roomItem := range game.Room.Items {
-		if roomItem.Name == itemToGet {
-			idx = i
-		}
-	}
-
-	if idx > -1 {
-		game.Player.Inventory = append(game.Player.Inventory, game.Room.Items[idx])
-		game.Room.Items = append(game.Room.Items[:idx], game.Room.Items[idx+1:]...)
+	roomItem, ok := game.Room.Items[itemToGet]
+	if ok {
+		delete(game.Room.Items, itemToGet)
+		game.Player.Inventory[roomItem.Name] = roomItem
 		cyan.Printf("You pick up the %s.\n", itemToGet)
 	} else {
-		red.Printf("There is no %s here\n", itemToGet)
+		if itemToGet == "" {
+			red.Println("There is no item to pick up.")
+		} else {
+			red.Printf("There is no %s here\n", itemToGet)
+		}
 	}
+
 }
 
 func playAgain() {
@@ -224,5 +244,5 @@ func showHelp() {
     - rest : restore health by resting
     - inventory / inv : show current inventory
     - status : show current player status
-    - quit : end the game`)
+    - q / quit : end the game`)
 }

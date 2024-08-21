@@ -6,7 +6,7 @@ type Room struct {
 	Description string
 	Sound       string
 	Smell       string
-	Items       []ArmoryItem
+	Items       map[string]ArmoryItem
 	Monster     *Monster
 }
 
@@ -44,6 +44,7 @@ func NewRoom() *Room {
 		Description: descriptions[rand.IntN(len(descriptions))],
 		Sound:       sounds[rand.IntN(len(sounds))],
 		Smell:       smells[rand.IntN(len(smells))],
+		Items:       make(map[string]ArmoryItem),
 	}
 }
 

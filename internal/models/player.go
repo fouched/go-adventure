@@ -6,7 +6,7 @@ type Player struct {
 	MonstersDefeated int
 	XP               int
 	Turns            int
-	Inventory        []ArmoryItem
+	Inventory        map[string]ArmoryItem
 }
 
 func NewPlayer() *Player {
@@ -16,6 +16,6 @@ func NewPlayer() *Player {
 		MonstersDefeated: 0,
 		XP:               0,
 		Turns:            0,
-		Inventory:        []ArmoryItem{},
+		Inventory:        make(map[string]ArmoryItem), // []ArmoryItem{}, // maybe this should rather be a map (for editing it)
 	}
 }
