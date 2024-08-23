@@ -51,7 +51,7 @@ func generateRoom() models.Room {
 	room := models.NewRoom()
 
 	// there is a 25% chance that this room has an item
-	if rand.IntN(100) < 99 {
+	if rand.IntN(100) < 26 {
 		a := models.GetAllArmory()
 		item := a[rand.IntN(len(a))]
 		room.Items[item.Name] = item
