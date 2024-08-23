@@ -9,18 +9,6 @@ type ArmoryItem struct {
 	Type      string
 }
 
-//func GetWeapons() *map[string]ArmoryItem {
-//	var weapons = make(map[string]ArmoryItem)
-//	weapons["ls"] = ArmoryItem{
-//		Name:      "ls",
-//		MinDamage: 1,
-//		MaxDamage: 1,
-//		ToHit:     0,
-//	}
-//
-//	return &weapons
-//}
-
 func GetAllArmory() []ArmoryItem {
 
 	var a = []ArmoryItem{
