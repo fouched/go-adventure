@@ -22,6 +22,7 @@ type ArmoryItem struct {
 //}
 
 func GetAllArmory() []ArmoryItem {
+
 	var a = []ArmoryItem{
 		{
 			Name:      "longsword",
@@ -172,32 +173,34 @@ func GetAllArmory() []ArmoryItem {
 	return a
 }
 
-func GetDefaultArmory() []ArmoryItem {
-	var a = []ArmoryItem{
-		{
-			Name:      "hands",
-			MinDamage: 1,
-			MaxDamage: 5,
-			ToHit:     0,
-			Defense:   0,
-			Type:      "weapon",
-		},
-		{
-			Name:      "clothes",
-			MinDamage: 0,
-			MaxDamage: 0,
-			ToHit:     0,
-			Defense:   0,
-			Type:      "armor",
-		},
-		{
-			Name:      "no shield",
-			MinDamage: 0,
-			MaxDamage: 0,
-			ToHit:     0,
-			Defense:   0,
-			Type:      "shield",
-		},
+func GetDefaultArmory() map[string]ArmoryItem {
+
+	a := make(map[string]ArmoryItem)
+
+	a["hands"] = ArmoryItem{
+		Name:      "hands",
+		MinDamage: 1,
+		MaxDamage: 5,
+		ToHit:     0,
+		Defense:   0,
+		Type:      "weapon",
+	}
+
+	a["clothes"] = ArmoryItem{
+		Name:      "clothes",
+		MinDamage: 0,
+		MaxDamage: 0,
+		ToHit:     0,
+		Defense:   0,
+		Type:      "armor",
+	}
+	a["no shield"] = ArmoryItem{
+		Name:      "no shield",
+		MinDamage: 0,
+		MaxDamage: 0,
+		ToHit:     0,
+		Defense:   0,
+		Type:      "shield",
 	}
 
 	return a

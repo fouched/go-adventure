@@ -39,8 +39,8 @@ var smells = []string{
 	"The smell of rancid meat suggests that something was rotting here not too long ago.",
 }
 
-func NewRoom() *Room {
-	return &Room{
+func NewRoom() Room {
+	return Room{
 		Description: descriptions[rand.IntN(len(descriptions))],
 		Sound:       sounds[rand.IntN(len(sounds))],
 		Smell:       smells[rand.IntN(len(smells))],

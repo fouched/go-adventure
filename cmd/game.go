@@ -21,9 +21,9 @@ var directions = []string{"n", "s", "e", "w"}
 func PlayGame() {
 
 	adventurer := models.NewPlayer()
-	currentGame := models.NewGame(*adventurer)
+	currentGame := models.NewGame(adventurer)
 	room := generateRoom()
-	currentGame.Room = *room
+	currentGame.Room = room
 	welcome()
 
 	// get the player input
@@ -46,7 +46,7 @@ func welcome() {
 	`)
 }
 
-func generateRoom() *models.Room {
+func generateRoom() models.Room {
 
 	room := models.NewRoom()
 
@@ -101,6 +101,14 @@ func exploreLabyrinth(currentGame *models.Game) {
 		} else if strings.HasPrefix(input, "drop") {
 			dropAnItem(currentGame, strings.TrimPrefix(input, "drop "))
 			continue
+		} else if strings.HasPrefix(input, "equip") {
+			item := strings.TrimPrefix(input, "equip ")
+			useItem(&currentGame.Player, item)
+			continue
+		} else if strings.HasPrefix(input, "use") {
+			item := strings.TrimPrefix(input, "use ")
+			useItem(&currentGame.Player, item)
+			continue
 		} else if input == "inventory" || input == "inv" {
 			showInventory(currentGame)
 			continue
@@ -114,16 +122,52 @@ func exploreLabyrinth(currentGame *models.Game) {
 			continue
 		}
 
-		currentGame.Room = *generateRoom()
+		currentGame.Room = generateRoom()
 		currentGame.Room.PrintDescription()
 
 	}
 }
 
+func useItem(player *models.Player, item string) {
+
+	_, hasItem := player.Inventory[item]
+	if hasItem {
+		oldWeapon := player.CurrentWeapon
+
+		if player.Inventory[item].Type == "weapon" {
+			player.CurrentWeapon = player.Inventory[item]
+			cyan.Printf("You arm yourself with a %s instead of your %s.\n", player.CurrentWeapon.Name, oldWeapon.Name)
+
+			// you can't use a shield with a bow
+			if item == "longbow" && player.CurrentShield.Name != "no shield" {
+				player.CurrentShield = models.GetDefaultArmory()["no shield"]
+				cyan.Printf("Since you can't use a shield with a %s, you sling it over your back.\n", player.CurrentWeapon.Name)
+			}
+		} else if player.Inventory[item].Type == "armor" {
+			player.CurrentArmor = player.Inventory[item]
+			cyan.Printf("You put on the %s.\n", player.CurrentArmor.Name)
+		} else if player.Inventory[item].Type == "shield" {
+			// you can't use a shield with a bow
+			if player.CurrentShield.Name == "longbow" {
+				red.Printf("You can't use a shield while using a bow\n")
+			} else {
+				player.CurrentShield = player.Inventory[item]
+				cyan.Printf("You equip your %s.\n", player.CurrentShield.Name)
+			}
+		} else {
+			red.Printf("You can't equip a %s.\n", item)
+		}
+
+	} else {
+		red.Printf("You don't have an %s.\n", item)
+	}
+
+}
+
 func dropAnItem(game *models.Game, input string) {
 
-	item, ok := game.Player.Inventory[input]
-	if ok {
+	item, hasItem := game.Player.Inventory[input]
+	if hasItem {
 		delete(game.Player.Inventory, input)
 		cyan.Printf("You drop the %s\n", item.Name)
 		game.Room.Items[item.Name] = item
@@ -235,7 +279,7 @@ func showHelp() {
     - n / s / e / w : move in a direction
     - map : show a map of the labyrinth
     - look : look around and describe you environment
-    - equip <item> : use an item from your inventory
+    - use / equip <item> : use an item from your inventory
     - unequip <item> : stop using an item from your inventory
     - fight : attack a foe
     - examine <object> : examine an object more closely
