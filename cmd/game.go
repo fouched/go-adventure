@@ -109,6 +109,10 @@ func exploreLabyrinth(currentGame *models.Game) {
 			item := strings.TrimPrefix(input, "use ")
 			useItem(&currentGame.Player, item)
 			continue
+		} else if strings.HasPrefix(input, "unequip") {
+			item := strings.TrimPrefix(input, "unequip ")
+			unequipItem(&currentGame.Player, item)
+			continue
 		} else if input == "inventory" || input == "inv" {
 			showInventory(currentGame)
 			continue
@@ -125,6 +129,26 @@ func exploreLabyrinth(currentGame *models.Game) {
 		currentGame.Room = generateRoom()
 		currentGame.Room.PrintDescription()
 
+	}
+}
+
+func unequipItem(player *models.Player, item string) {
+	_, hasItem := player.Inventory[item]
+	if hasItem {
+		if player.CurrentWeapon.Name == item {
+			player.CurrentWeapon = models.GetDefaultArmory()["hands"]
+			cyan.Printf("You stop using the %s.", item)
+		} else if player.CurrentArmor.Name == item {
+			player.CurrentArmor = models.GetDefaultArmory()["clothes"]
+			cyan.Printf("You stop using the %s.", item)
+		} else if player.CurrentShield.Name == item {
+			player.CurrentShield = models.GetDefaultArmory()["no shield"]
+			cyan.Printf("You stop using the %s.", item)
+		} else {
+			red.Printf("You don't have a %s equipped!", item)
+		}
+	} else {
+		red.Printf("You don't have a %s", item)
 	}
 }
 
