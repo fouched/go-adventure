@@ -72,7 +72,7 @@ func exploreLabyrinth(currentGame *models.Game) {
 	for {
 
 		for _, item := range currentGame.Room.Items {
-			cyan.Printf("You see a %s\n", item.Name)
+			yellow.Printf("You see a %s\n", item.Name)
 		}
 
 		if currentGame.Room.Monster != nil {
@@ -168,9 +168,18 @@ func dropAnItem(game *models.Game, input string) {
 
 	item, hasItem := game.Player.Inventory[input]
 	if hasItem {
-		delete(game.Player.Inventory, input)
-		cyan.Printf("You drop the %s\n", item.Name)
-		game.Room.Items[item.Name] = item
+
+		if input == game.Player.CurrentWeapon.Name {
+			red.Println("You cannot drop your currently equipped weapon!")
+		} else if input == game.Player.CurrentArmor.Name {
+			red.Println("You cannot drop your currently equipped armor!")
+		} else if input == game.Player.CurrentShield.Name {
+			red.Println("You cannot drop your currently equipped shield!")
+		} else {
+			delete(game.Player.Inventory, input)
+			cyan.Printf("You drop the %s\n", item.Name)
+			game.Room.Items[item.Name] = item
+		}
 	} else {
 		red.Printf("You are not carrying a %s\n", input)
 	}
@@ -178,8 +187,19 @@ func dropAnItem(game *models.Game, input string) {
 
 func showInventory(currentGame *models.Game) {
 	cyan.Println("Your inventory:")
+	cyan.Printf("    - %d pieces of gold.\n", currentGame.Player.Treasure)
+
 	for _, item := range currentGame.Player.Inventory {
-		cyan.Printf("    - %s\n", item.Name)
+
+		if item.Name == currentGame.Player.CurrentWeapon.Name {
+			cyan.Printf("    - %s (equipped)\n", item.Name)
+		} else if item.Name == currentGame.Player.CurrentArmor.Name {
+			cyan.Printf("    - %s (equipped)\n", item.Name)
+		} else if item.Name == currentGame.Player.CurrentShield.Name {
+			cyan.Printf("    - %s (equipped)\n", item.Name)
+		} else {
+			cyan.Printf("    - %s\n", item.Name)
+		}
 	}
 }
 
