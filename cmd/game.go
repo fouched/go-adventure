@@ -118,6 +118,9 @@ func exploreLabyrinth(currentGame *models.Game) {
 			continue
 		} else if slices.Contains(directions, input) {
 			cyan.Println("You move deeper into the dungeon.")
+		} else if input == "status" {
+			printStatus(&currentGame.Player)
+			continue
 		} else if input == "q" || input == "quit" {
 			yellow.Println("Overcome with terror, you flee the dungeon.")
 			playAgain()
@@ -128,8 +131,19 @@ func exploreLabyrinth(currentGame *models.Game) {
 
 		currentGame.Room = generateRoom()
 		currentGame.Room.PrintDescription()
+		currentGame.Player.Turns += 1
 
 	}
+}
+
+func printStatus(player *models.Player) {
+	cyan.Printf("You have played the game for %d turns, defeated %d monsters, and found %d gold pieces.\n",
+		player.Turns, player.MonstersDefeated, player.Treasure)
+	cyan.Printf("You have earned %d xp.\n", player.XP)
+	cyan.Printf("You have %d hit points remaining, out of 100.\n", player.HP)
+	cyan.Printf("Currently equipped weapon: %s.\n", player.CurrentWeapon.Name)
+	cyan.Printf("Currently equipped armor: %s.\n", player.CurrentArmor.Name)
+	cyan.Printf("Currently equipped shield: %s.\n", player.CurrentShield.Name)
 }
 
 func unequipItem(player *models.Player, item string) {
