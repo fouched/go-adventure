@@ -251,6 +251,9 @@ func showInventory(currentGame *models.Game) {
 
 func readInput() string {
 
+	// we could also declare variable and scan
+	// var input string
+	// fmt.Scanln(&input)
 	reader := bufio.NewReader(os.Stdin)
 	input, _ := reader.ReadString('\n')
 	input = strings.TrimSuffix(input, "\n")
