@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"github.com/fatih/color"
 	"github.com/fouched/go-adventure/internal/models"
@@ -251,13 +250,13 @@ func showInventory(currentGame *models.Game) {
 
 func readInput() string {
 
-	// we could also declare variable and scan
-	// var input string
-	// fmt.Scanln(&input)
-	reader := bufio.NewReader(os.Stdin)
-	input, _ := reader.ReadString('\n')
-	input = strings.TrimSuffix(input, "\n")
-	input = strings.TrimSuffix(input, "\r")
+	// we could also do below manually
+	//reader := bufio.NewReader(os.Stdin)
+	//input, _ := reader.ReadString('\n')
+	//input = strings.TrimSuffix(input, "\n")
+	//input = strings.TrimSuffix(input, "\r")
+	var input string
+	fmt.Scanln(&input)
 	return strings.TrimSpace(strings.ToLower(input))
 }
 
