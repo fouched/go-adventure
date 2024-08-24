@@ -77,11 +77,19 @@ func exploreLabyrinth(currentGame *models.Game) {
 
 		if currentGame.Room.Monster != nil {
 			red.Printf("There is a %s here!\n", currentGame.Room.Monster.Name)
+			f := getInput("Do you want to fight or flee?", []string{"fight", "flee"})
+			for {
+				if f == "flee" {
+					cyan.Println("You turn and run, coward that you are...")
+					break
+				} else {
+					continue
+				}
+			}
 		}
 
-		var input string
 		yellow.Print("-> ")
-		input = readInput(input)
+		input := readInput()
 
 		// process input
 		if input == "help" {
@@ -241,10 +249,10 @@ func showInventory(currentGame *models.Game) {
 	}
 }
 
-func readInput(input string) string {
+func readInput() string {
 
 	reader := bufio.NewReader(os.Stdin)
-	input, _ = reader.ReadString('\n')
+	input, _ := reader.ReadString('\n')
 	input = strings.TrimSuffix(input, "\n")
 	input = strings.TrimSuffix(input, "\r")
 	return strings.TrimSpace(strings.ToLower(input))
@@ -303,10 +311,8 @@ func getYN(q string) string {
 	options := []string{"yes", "no", "y", "n"}
 
 	for {
-		var input string
 		cyan.Print(q + " (yes/no) -> ")
-		fmt.Scanln(&input)
-		input = strings.TrimSpace(strings.ToLower(input))
+		input := readInput()
 
 		for i := range options {
 			if input == options[i] {
@@ -329,6 +335,29 @@ func getYN(q string) string {
 	}
 
 	return answer
+}
+
+func getInput(q string, answers []string) string {
+
+	for {
+		cyan.Printf("%s", q)
+		yellow.Print(" -> ")
+		input := readInput()
+
+		valid := false
+		for i := range answers {
+			if input == answers[i] {
+				valid = true
+				break
+			}
+		}
+
+		if valid {
+			return input
+		} else {
+			yellow.Println("Please enter a valid response.")
+		}
+	}
 }
 
 func showHelp() {
