@@ -82,7 +82,15 @@ func exploreLabyrinth(currentGame *models.Game) {
 					cyan.Println("You turn and run, coward that you are...")
 					break
 				} else {
-					continue
+					winner := fight(currentGame)
+					if winner == "player" {
+						break
+					} else if winner == "monster" {
+						break
+					} else { // flee
+						break
+					}
+
 				}
 			}
 		}
