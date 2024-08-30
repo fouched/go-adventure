@@ -63,6 +63,9 @@ func fight(currentGame *models.Game) string {
 			}
 		}
 
+		// update reference variables
+		currentGame.Player.HP = pl.HP
+
 		if pl.HP <= 0 || monsterHp <= 0 {
 			break
 		}

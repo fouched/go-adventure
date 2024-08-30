@@ -137,7 +137,10 @@ func exploreLabyrinth(currentGame *models.Game) {
 			item := strings.TrimPrefix(input, "unequip ")
 			unequipItem(&currentGame.Player, item)
 			continue
-		} else if input == "inventory" || input == "inv" {
+		} else if input == "r" || input == "rest" {
+			rest(&currentGame.Player)
+			continue
+		} else if input == "inv" || input == "inventory" {
 			showInventory(currentGame)
 			continue
 		} else if slices.Contains(directions, input) {
@@ -157,6 +160,19 @@ func exploreLabyrinth(currentGame *models.Game) {
 		currentGame.Room.PrintDescription()
 		currentGame.Player.Turns += 1
 
+	}
+}
+
+func rest(player *models.Player) {
+
+	if player.HP == PLAYER_HP {
+		cyan.Println("You are fully rested, and feel great. There is no point in setting around...\n")
+	} else {
+		player.HP = player.HP + rand.IntN(10) + 1
+		if player.HP > PLAYER_HP {
+			player.HP = PLAYER_HP
+		}
+		cyan.Printf("You feel better (%d/%d) hit points.\n", player.HP, PLAYER_HP)
 	}
 }
 
