@@ -24,12 +24,15 @@ func fight(currentGame *models.Game) string {
 	}
 
 	monsterHp := rand.IntN(rm.Monster.MaxHP-rm.Monster.MinHP) + rm.Monster.MinDamage
+	monsterOriginalHp := monsterHp
 
 	for {
 		if playerTurn {
 			// 50% chance to hit
 			r := rand.IntN(100)
-			if r >= 50 {
+			mr := r + pl.CurrentWeapon.ToHit - rm.Monster.ArmorModifier
+
+			if mr >= 50 {
 				green.Printf("You hit the %s with your %s!\n", rm.Monster.Name, pl.CurrentWeapon.Name)
 				damage := rand.IntN(pl.CurrentWeapon.MaxDamage-pl.CurrentWeapon.MinDamage) + pl.CurrentWeapon.MinDamage
 				monsterHp = monsterHp - damage
@@ -44,7 +47,9 @@ func fight(currentGame *models.Game) string {
 		} else {
 			// 50% chance to hit
 			r := rand.IntN(100)
-			if r >= 50 {
+			mr := r - (pl.CurrentShield.Defense + pl.CurrentArmor.Defense)
+
+			if mr >= 50 {
 				red.Printf("The %s attacks and hits!\n", rm.Monster.Name)
 				damage := rand.IntN(rm.Monster.MaxDamage-rm.Monster.MinDamage) + rm.Monster.MinDamage
 				pl.HP = pl.HP - damage
@@ -62,6 +67,14 @@ func fight(currentGame *models.Game) string {
 			break
 		}
 
+		// feedback on monster state
+		if monsterHp < monsterOriginalHp/2 {
+			yellow.Printf("The %s is bleeding.\n", rm.Monster.Name)
+		} else if monsterHp < monsterOriginalHp/3 {
+			yellow.Printf("The %s is bleeding profusely, and looks to be nearly dead.\n", rm.Monster.Name)
+		}
+
+		// feedback on player state
 		if pl.HP <= 0.2*PLAYER_HP {
 			answer := getYN("You are near death. Do you want to continue")
 			if answer == "no" {
@@ -78,7 +91,7 @@ func fight(currentGame *models.Game) string {
 				return "flee"
 			}
 		} else {
-			cyan.Println("You are only lightly wounded. 'Tis but a scratch.\n")
+			cyan.Println("You are only lightly wounded. 'Tis but a scratch.")
 		}
 
 		time.Sleep(1 * time.Second)

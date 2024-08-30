@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/fatih/color"
 	"github.com/fouched/go-adventure/internal/models"
@@ -84,13 +85,21 @@ func exploreLabyrinth(currentGame *models.Game) {
 				} else {
 					winner := fight(currentGame)
 					if winner == "player" {
+						gold := rand.IntN(100) + 1
+						cyan.Printf("You search the monster's body and find %d pieces of gold.\n", gold)
+						currentGame.Player.Treasure = currentGame.Player.Treasure + gold
+						currentGame.Player.XP = currentGame.Player.XP + 100
+						currentGame.Player.MonstersDefeated = currentGame.Player.MonstersDefeated + 1
+						currentGame.Room.Monster = nil
 						break
 					} else if winner == "monster" {
+						red.Printf("You have failed in your mission, and your body lies in the labyrinth forever.\n")
+						playAgain()
 						break
-					} else { // flee
+					} else {
+						cyan.Println("You flee in terror from the monster.\n")
 						break
 					}
-
 				}
 			}
 		}
@@ -259,12 +268,13 @@ func showInventory(currentGame *models.Game) {
 func readInput() string {
 
 	// we could also do below manually
-	//reader := bufio.NewReader(os.Stdin)
-	//input, _ := reader.ReadString('\n')
-	//input = strings.TrimSuffix(input, "\n")
-	//input = strings.TrimSuffix(input, "\r")
-	var input string
-	fmt.Scanln(&input)
+	reader := bufio.NewReader(os.Stdin)
+	input, _ := reader.ReadString('\n')
+	input = strings.TrimSuffix(input, "\n")
+	input = strings.TrimSuffix(input, "\r")
+	// cannot use below it splits spaces...
+	//var input string
+	//fmt.Scanln(&input)
 	return strings.TrimSpace(strings.ToLower(input))
 }
 
