@@ -1,12 +1,5 @@
 package models
 
-import "github.com/fatih/color"
-
-var red = color.New(color.FgRed)
-var green = color.New(color.FgGreen)
-var yellow = color.New(color.FgYellow)
-var cyan = color.New(color.FgCyan)
-
 type Game struct {
 	Player      Player
 	Room        Room

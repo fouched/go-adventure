@@ -1,4 +1,4 @@
-package main
+package config
 
 const PLAYER_HP = 100
 

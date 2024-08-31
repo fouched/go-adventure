@@ -1,5 +1,7 @@
 package models
 
+import "github.com/fouched/go-adventure/internal/config"
+
 type Player struct {
 	HP               int
 	Treasure         int
@@ -12,11 +14,12 @@ type Player struct {
 	CurrentShield    ArmoryItem
 	CoordX           int
 	CoordY           int
+	Visited          []string
 }
 
 func NewPlayer() Player {
 	return Player{
-		HP:               100,
+		HP:               config.PLAYER_HP,
 		Treasure:         0,
 		MonstersDefeated: 0,
 		XP:               0,

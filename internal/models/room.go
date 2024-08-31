@@ -1,6 +1,9 @@
 package models
 
-import "math/rand/v2"
+import (
+	"github.com/fouched/go-adventure/internal/colour"
+	"math/rand/v2"
+)
 
 type Room struct {
 	Description string
@@ -51,7 +54,7 @@ func NewRoom(location string) Room {
 }
 
 func (r *Room) PrintDescription() {
-	green.Println(r.Description)
-	green.Println(r.Sound)
-	green.Println(r.Smell)
+	colour.Green.Println(r.Description)
+	colour.Green.Println(r.Sound)
+	colour.Green.Println(r.Smell)
 }
