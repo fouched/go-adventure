@@ -238,6 +238,12 @@ func rest(player *models.Player) {
 
 func showMap(currentGame *models.Game) {
 
+	// print top line
+	for i := 0; i < config.MAX_X_AXIS*6+3; i++ {
+		clr.Yellow.Print("-")
+	}
+	fmt.Println("")
+
 	for y := config.MAX_Y_AXIS; y >= config.MAX_Y_AXIS*-1; y-- {
 		for x := config.MAX_X_AXIS * -1; x <= config.MAX_X_AXIS; x++ {
 
@@ -264,6 +270,26 @@ func showMap(currentGame *models.Game) {
 		}
 		fmt.Println("")
 	}
+
+	// print bottom line
+	for i := 0; i < config.MAX_X_AXIS*6+3; i++ {
+		clr.Yellow.Print("-")
+	}
+
+	// print the legend
+	fmt.Println("")
+	red := color.New(color.FgRed)
+	whiteBg := red.Add(color.BgWhite)
+	whiteBg.Print(" X ")
+	clr.Red.Print(": You  ")
+	clr.Red.Print(" M : Monster  ")
+	green := color.New(color.FgGreen)
+	whiteBg = green.Add(color.BgWhite)
+	whiteBg.Print(" E ")
+	clr.Green.Print(": Exit")
+
+	fmt.Println("")
+
 }
 
 func printStatus(player *models.Player) {
