@@ -3,7 +3,8 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/fouched/go-adventure/internal/colour"
+	"github.com/fatih/color"
+	"github.com/fouched/go-adventure/internal/clr"
 	"github.com/fouched/go-adventure/internal/config"
 	"github.com/fouched/go-adventure/internal/models"
 	"math/rand/v2"
@@ -31,7 +32,7 @@ func PlayGame() {
 	welcome(currentGame)
 
 	// get the player input
-	colour.Cyan.Println("Press enter to begin...")
+	clr.Cyan.Println("Press enter to begin...")
 	var input string
 	fmt.Scanln(&input)
 	currentGame.Room.PrintDescription()
@@ -40,8 +41,8 @@ func PlayGame() {
 
 func welcome(currentGame *models.Game) {
 
-	colour.Red.Println("                                                  D U N G E O N")
-	colour.Green.Println(`
+	clr.Red.Println("                                                  D U N G E O N")
+	clr.Green.Println(`
     The village of Honeywood has been terrorized by strange, deadly creatures for months now. Unable to endure any 
     longer, the villagers pooled their wealth and hired the most skilled adventurer they could find: you. After
     listening to their tale of woe, you agree to enter the labyrinth where most of the creatures seem to originate,
@@ -49,7 +50,7 @@ func welcome(currentGame *models.Game) {
     ready to do battle....
 	`)
 	fmt.Println("")
-	colour.Yellow.Printf("According to the people of Honeywood there are %d creatures in this labyrinth.\n", currentGame.NumMonsters)
+	clr.Yellow.Printf("According to the people of Honeywood there are %d creatures in this labyrinth.\n", currentGame.NumMonsters)
 	fmt.Println("")
 }
 
@@ -79,39 +80,39 @@ func exploreLabyrinth(currentGame *models.Game) {
 	for {
 
 		for _, item := range currentGame.Room.Items {
-			colour.Yellow.Printf("You see a %s\n", item.Name)
+			clr.Yellow.Printf("You see a %s\n", item.Name)
 		}
 
 		if currentGame.Room.Monster != nil {
-			colour.Red.Printf("There is a %s here!\n", currentGame.Room.Monster.Name)
+			clr.Red.Printf("There is a %s here!\n", currentGame.Room.Monster.Name)
 			f := getInput("Do you want to fight or flee?", []string{"fight", "flee"})
 			for {
 				if f == "flee" {
-					colour.Cyan.Println("You turn and run, coward that you are...")
+					clr.Cyan.Println("You turn and run, coward that you are...")
 					break
 				} else {
 					winner := fight(currentGame)
 					if winner == "player" {
 						gold := rand.IntN(100) + 1
-						colour.Cyan.Printf("You search the monster's body and find %d pieces of gold.\n", gold)
+						clr.Cyan.Printf("You search the monster's body and find %d pieces of gold.\n", gold)
 						currentGame.Player.Treasure = currentGame.Player.Treasure + gold
 						currentGame.Player.XP = currentGame.Player.XP + 100
 						currentGame.Player.MonstersDefeated = currentGame.Player.MonstersDefeated + 1
 						currentGame.Room.Monster = nil
 						break
 					} else if winner == "monster" {
-						colour.Red.Printf("You have failed in your mission, and your body lies in the labyrinth forever.\n")
+						clr.Red.Printf("You have failed in your mission, and your body lies in the labyrinth forever.\n")
 						playAgain()
 						break
 					} else {
-						colour.Cyan.Println("You flee in terror from the monster.\n")
+						clr.Cyan.Println("You flee in terror from the monster.\n")
 						break
 					}
 				}
 			}
 		}
 
-		colour.Yellow.Print("-> ")
+		clr.Yellow.Print("-> ")
 		input := readInput()
 
 		// process input
@@ -121,9 +122,12 @@ func exploreLabyrinth(currentGame *models.Game) {
 		} else if input == "look" {
 			currentGame.Room.PrintDescription()
 			continue
+		} else if input == "map" {
+			showMap(currentGame)
+			continue
 		} else if strings.HasPrefix(input, "get") {
 			if currentGame.Room.Items == nil {
-				colour.Cyan.Println("There is nothing to pick up")
+				clr.Cyan.Println("There is nothing to pick up")
 				continue
 			} else {
 				getAnItem(currentGame, input)
@@ -165,41 +169,41 @@ func exploreLabyrinth(currentGame *models.Game) {
 				if currentGame.Player.CoordY < currentGame.Y {
 					currentGame.Player.CoordY = currentGame.Player.CoordY + 1
 				} else {
-					colour.Red.Println("You bump into a stone wall.")
+					clr.Red.Println("You bump into a stone wall.")
 					continue
 				}
 			} else if direction == "s" {
 				if currentGame.Player.CoordY > currentGame.Y*-1 {
 					currentGame.Player.CoordY = currentGame.Player.CoordY - 1
 				} else {
-					colour.Red.Println("You bump into a stone wall.")
+					clr.Red.Println("You bump into a stone wall.")
 					continue
 				}
 			} else if direction == "e" {
 				if currentGame.Player.CoordX < currentGame.X {
 					currentGame.Player.CoordX = currentGame.Player.CoordX + 1
 				} else {
-					colour.Red.Println("You bump into a stone wall.")
+					clr.Red.Println("You bump into a stone wall.")
 					continue
 				}
 			} else if direction == "w" {
 				if currentGame.Player.CoordX > currentGame.X*-1 {
 					currentGame.Player.CoordX = currentGame.Player.CoordX - 1
 				} else {
-					colour.Red.Println("You bump into a stone wall.")
+					clr.Red.Println("You bump into a stone wall.")
 					continue
 				}
 			}
-			colour.Cyan.Println("You move deeper into the dungeon.")
+			clr.Cyan.Println("You move deeper into the dungeon.")
 
 		} else if input == "status" {
 			printStatus(&currentGame.Player)
 			continue
 		} else if input == "q" || input == "quit" {
-			colour.Yellow.Println("Overcome with terror, you flee the dungeon.")
+			clr.Yellow.Println("Overcome with terror, you flee the dungeon.")
 			playAgain()
 		} else {
-			colour.Cyan.Println("I'm not sure what you mean... type help for available commands.")
+			clr.Cyan.Println("I'm not sure what you mean... type help for available commands.")
 			continue
 		}
 
@@ -208,7 +212,7 @@ func exploreLabyrinth(currentGame *models.Game) {
 		currentGame.Room.Location = newLocation
 
 		if slices.Contains(currentGame.Player.Visited, newLocation) {
-			colour.Yellow.Println("This place seems familiar...")
+			clr.Yellow.Println("This place seems familiar...")
 		} else {
 			currentGame.Player.Visited = append(currentGame.Player.Visited, newLocation)
 		}
@@ -222,24 +226,55 @@ func exploreLabyrinth(currentGame *models.Game) {
 func rest(player *models.Player) {
 
 	if player.HP == config.PLAYER_HP {
-		colour.Cyan.Println("You are fully rested, and feel great. There is no point in setting around...\n")
+		clr.Cyan.Println("You are fully rested, and feel great. There is no point in setting around...\n")
 	} else {
 		player.HP = player.HP + rand.IntN(10) + 1
 		if player.HP > config.PLAYER_HP {
 			player.HP = config.PLAYER_HP
 		}
-		colour.Cyan.Printf("You feel better (%d/%d) hit points.\n", player.HP, config.PLAYER_HP)
+		clr.Cyan.Printf("You feel better (%d/%d) hit points.\n", player.HP, config.PLAYER_HP)
+	}
+}
+
+func showMap(currentGame *models.Game) {
+
+	for y := config.MAX_Y_AXIS; y >= config.MAX_Y_AXIS*-1; y-- {
+		for x := config.MAX_X_AXIS * -1; x <= config.MAX_X_AXIS; x++ {
+
+			if fmt.Sprintf("%d,%d", x, y) == currentGame.Room.Location {
+				// current location
+				red := color.New(color.FgRed)
+				whiteBg := red.Add(color.BgWhite)
+				whiteBg.Print(" X ")
+			} else if fmt.Sprintf("%d,%d", x, y) == currentGame.Entrance {
+				green := color.New(color.FgGreen)
+				whiteBg := green.Add(color.BgWhite)
+				whiteBg.Print(" E ")
+			} else if slices.Contains(currentGame.Player.Visited, fmt.Sprintf("%d,%d", x, y)) {
+				// a place we've visited
+				testRoom := currentGame.Rooms[fmt.Sprintf("%d,%d", x, y)]
+				if testRoom.Monster == nil {
+					fmt.Print("   ")
+				} else {
+					clr.Red.Print(" M ")
+				}
+			} else {
+				clr.Yellow.Print(" ? ")
+			}
+		}
+		fmt.Println("")
 	}
 }
 
 func printStatus(player *models.Player) {
-	colour.Cyan.Printf("You have played the game for %d turns, defeated %d monsters, and found %d gold pieces.\n",
+
+	clr.Cyan.Printf("You have played the game for %d turns, defeated %d monsters, and found %d gold pieces.\n",
 		player.Turns, player.MonstersDefeated, player.Treasure)
-	colour.Cyan.Printf("You have earned %d xp.\n", player.XP)
-	colour.Cyan.Printf("You have %d hit points remaining, out of 100.\n", player.HP)
-	colour.Cyan.Printf("Currently equipped weapon: %s.\n", player.CurrentWeapon.Name)
-	colour.Cyan.Printf("Currently equipped armor: %s.\n", player.CurrentArmor.Name)
-	colour.Cyan.Printf("Currently equipped shield: %s.\n", player.CurrentShield.Name)
+	clr.Cyan.Printf("You have earned %d xp.\n", player.XP)
+	clr.Cyan.Printf("You have %d hit points remaining, out of 100.\n", player.HP)
+	clr.Cyan.Printf("Currently equipped weapon: %s.\n", player.CurrentWeapon.Name)
+	clr.Cyan.Printf("Currently equipped armor: %s.\n", player.CurrentArmor.Name)
+	clr.Cyan.Printf("Currently equipped shield: %s.\n", player.CurrentShield.Name)
 }
 
 func unequipItem(player *models.Player, item string) {
@@ -247,18 +282,18 @@ func unequipItem(player *models.Player, item string) {
 	if hasItem {
 		if player.CurrentWeapon.Name == item {
 			player.CurrentWeapon = models.GetDefaultArmory()["hands"]
-			colour.Cyan.Printf("You stop using the %s.", item)
+			clr.Cyan.Printf("You stop using the %s.", item)
 		} else if player.CurrentArmor.Name == item {
 			player.CurrentArmor = models.GetDefaultArmory()["clothes"]
-			colour.Cyan.Printf("You stop using the %s.", item)
+			clr.Cyan.Printf("You stop using the %s.", item)
 		} else if player.CurrentShield.Name == item {
 			player.CurrentShield = models.GetDefaultArmory()["no shield"]
-			colour.Cyan.Printf("You stop using the %s.", item)
+			clr.Cyan.Printf("You stop using the %s.", item)
 		} else {
-			colour.Red.Printf("You don't have a %s equipped!", item)
+			clr.Red.Printf("You don't have a %s equipped!", item)
 		}
 	} else {
-		colour.Red.Printf("You don't have a %s", item)
+		clr.Red.Printf("You don't have a %s", item)
 	}
 }
 
@@ -270,30 +305,30 @@ func useItem(player *models.Player, item string) {
 
 		if player.Inventory[item].Type == "weapon" {
 			player.CurrentWeapon = player.Inventory[item]
-			colour.Cyan.Printf("You arm yourself with a %s instead of your %s.\n", player.CurrentWeapon.Name, oldWeapon.Name)
+			clr.Cyan.Printf("You arm yourself with a %s instead of your %s.\n", player.CurrentWeapon.Name, oldWeapon.Name)
 
 			// you can't use a shield with a bow
 			if item == "longbow" && player.CurrentShield.Name != "no shield" {
 				player.CurrentShield = models.GetDefaultArmory()["no shield"]
-				colour.Cyan.Printf("Since you can't use a shield with a %s, you sling it over your back.\n", player.CurrentWeapon.Name)
+				clr.Cyan.Printf("Since you can't use a shield with a %s, you sling it over your back.\n", player.CurrentWeapon.Name)
 			}
 		} else if player.Inventory[item].Type == "armor" {
 			player.CurrentArmor = player.Inventory[item]
-			colour.Cyan.Printf("You put on the %s.\n", player.CurrentArmor.Name)
+			clr.Cyan.Printf("You put on the %s.\n", player.CurrentArmor.Name)
 		} else if player.Inventory[item].Type == "shield" {
 			// you can't use a shield with a bow
 			if player.CurrentShield.Name == "longbow" {
-				colour.Red.Printf("You can't use a shield while using a bow\n")
+				clr.Red.Printf("You can't use a shield while using a bow\n")
 			} else {
 				player.CurrentShield = player.Inventory[item]
-				colour.Cyan.Printf("You equip your %s.\n", player.CurrentShield.Name)
+				clr.Cyan.Printf("You equip your %s.\n", player.CurrentShield.Name)
 			}
 		} else {
-			colour.Red.Printf("You can't equip a %s.\n", item)
+			clr.Red.Printf("You can't equip a %s.\n", item)
 		}
 
 	} else {
-		colour.Red.Printf("You don't have an %s.\n", item)
+		clr.Red.Printf("You don't have an %s.\n", item)
 	}
 
 }
@@ -304,35 +339,35 @@ func dropAnItem(game *models.Game, input string) {
 	if hasItem {
 
 		if input == game.Player.CurrentWeapon.Name {
-			colour.Red.Println("You cannot drop your currently equipped weapon!")
+			clr.Red.Println("You cannot drop your currently equipped weapon!")
 		} else if input == game.Player.CurrentArmor.Name {
-			colour.Red.Println("You cannot drop your currently equipped armor!")
+			clr.Red.Println("You cannot drop your currently equipped armor!")
 		} else if input == game.Player.CurrentShield.Name {
-			colour.Red.Println("You cannot drop your currently equipped shield!")
+			clr.Red.Println("You cannot drop your currently equipped shield!")
 		} else {
 			delete(game.Player.Inventory, input)
-			colour.Cyan.Printf("You drop the %s\n", item.Name)
+			clr.Cyan.Printf("You drop the %s\n", item.Name)
 			game.Room.Items[item.Name] = item
 		}
 	} else {
-		colour.Red.Printf("You are not carrying a %s\n", input)
+		clr.Red.Printf("You are not carrying a %s\n", input)
 	}
 }
 
 func showInventory(currentGame *models.Game) {
-	colour.Cyan.Println("Your inventory:")
-	colour.Cyan.Printf("    - %d pieces of gold.\n", currentGame.Player.Treasure)
+	clr.Cyan.Println("Your inventory:")
+	clr.Cyan.Printf("    - %d pieces of gold.\n", currentGame.Player.Treasure)
 
 	for _, item := range currentGame.Player.Inventory {
 
 		if item.Name == currentGame.Player.CurrentWeapon.Name {
-			colour.Cyan.Printf("    - %s (equipped)\n", item.Name)
+			clr.Cyan.Printf("    - %s (equipped)\n", item.Name)
 		} else if item.Name == currentGame.Player.CurrentArmor.Name {
-			colour.Cyan.Printf("    - %s (equipped)\n", item.Name)
+			clr.Cyan.Printf("    - %s (equipped)\n", item.Name)
 		} else if item.Name == currentGame.Player.CurrentShield.Name {
-			colour.Cyan.Printf("    - %s (equipped)\n", item.Name)
+			clr.Cyan.Printf("    - %s (equipped)\n", item.Name)
 		} else {
-			colour.Cyan.Printf("    - %s\n", item.Name)
+			clr.Cyan.Printf("    - %s\n", item.Name)
 		}
 	}
 }
@@ -366,7 +401,7 @@ func getAnItem(game *models.Game, input string) {
 
 	playerItem, ok := game.Player.Inventory[itemToGet]
 	if ok {
-		colour.Cyan.Printf("You already have a %s, and decide you don't need another.\n", playerItem.Name)
+		clr.Cyan.Printf("You already have a %s, and decide you don't need another.\n", playerItem.Name)
 		return
 	}
 
@@ -374,12 +409,12 @@ func getAnItem(game *models.Game, input string) {
 	if ok {
 		delete(game.Room.Items, itemToGet)
 		game.Player.Inventory[roomItem.Name] = roomItem
-		colour.Cyan.Printf("You pick up the %s.\n", itemToGet)
+		clr.Cyan.Printf("You pick up the %s.\n", itemToGet)
 	} else {
 		if itemToGet == "" {
-			colour.Red.Println("There is no item to pick up.")
+			clr.Red.Println("There is no item to pick up.")
 		} else {
-			colour.Red.Printf("There is no %s here\n", itemToGet)
+			clr.Red.Printf("There is no %s here\n", itemToGet)
 		}
 	}
 
@@ -391,7 +426,7 @@ func playAgain() {
 	if yn == "yes" {
 		PlayGame()
 	} else {
-		colour.Yellow.Println("Until next time, adventurer.")
+		clr.Yellow.Println("Until next time, adventurer.")
 		os.Exit(0)
 	}
 }
@@ -403,7 +438,7 @@ func getYN(q string) string {
 	options := []string{"yes", "no", "y", "n"}
 
 	for {
-		colour.Cyan.Print(q + " (yes/no) -> ")
+		clr.Cyan.Print(q + " (yes/no) -> ")
 		input := readInput()
 
 		for i := range options {
@@ -415,7 +450,7 @@ func getYN(q string) string {
 		}
 
 		if !valid {
-			colour.Cyan.Println("Please enter yes (y) or no (n).")
+			clr.Cyan.Println("Please enter yes (y) or no (n).")
 		} else {
 			if answer == "y" {
 				answer = "yes"
@@ -432,8 +467,8 @@ func getYN(q string) string {
 func getInput(q string, answers []string) string {
 
 	for {
-		colour.Cyan.Printf("%s", q)
-		colour.Yellow.Print(" -> ")
+		clr.Cyan.Printf("%s", q)
+		clr.Yellow.Print(" -> ")
 		input := readInput()
 
 		valid := false
@@ -447,14 +482,14 @@ func getInput(q string, answers []string) string {
 		if valid {
 			return input
 		} else {
-			colour.Yellow.Println("Please enter a valid response.")
+			clr.Yellow.Println("Please enter a valid response.")
 		}
 	}
 }
 
 func showHelp() {
 
-	colour.Green.Println(`Available commands:
+	clr.Green.Println(`Available commands:
     - n / s / e / w : move in a direction
     - map : show a map of the labyrinth
     - look : look around and describe you environment

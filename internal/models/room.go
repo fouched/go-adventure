@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/fouched/go-adventure/internal/colour"
+	"github.com/fouched/go-adventure/internal/clr"
 	"math/rand/v2"
 )
 
@@ -54,7 +54,7 @@ func NewRoom(location string) Room {
 }
 
 func (r *Room) PrintDescription() {
-	colour.Green.Println(r.Description)
-	colour.Green.Println(r.Sound)
-	colour.Green.Println(r.Smell)
+	clr.Green.Println(r.Description)
+	clr.Green.Println(r.Sound)
+	clr.Green.Println(r.Smell)
 }

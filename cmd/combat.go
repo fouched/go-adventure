@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/fouched/go-adventure/internal/colour"
+	"github.com/fouched/go-adventure/internal/clr"
 	"github.com/fouched/go-adventure/internal/config"
 	"github.com/fouched/go-adventure/internal/models"
 	"math/rand/v2"
@@ -20,9 +20,9 @@ func fight(currentGame *models.Game) string {
 	}
 
 	if playerTurn {
-		colour.Cyan.Printf("You brace yourself and attack the %s.\n", rm.Monster.Name)
+		clr.Cyan.Printf("You brace yourself and attack the %s.\n", rm.Monster.Name)
 	} else {
-		colour.Cyan.Printf("The %s moves quickly and attacks first!\n", rm.Monster.Name)
+		clr.Cyan.Printf("The %s moves quickly and attacks first!\n", rm.Monster.Name)
 	}
 
 	monsterHp := rand.IntN(rm.Monster.MaxHP-rm.Monster.MinHP) + rm.Monster.MinDamage
@@ -35,15 +35,15 @@ func fight(currentGame *models.Game) string {
 			mr := r + pl.CurrentWeapon.ToHit - rm.Monster.ArmorModifier
 
 			if mr >= 50 {
-				colour.Green.Printf("You hit the %s with your %s!\n", rm.Monster.Name, pl.CurrentWeapon.Name)
+				clr.Green.Printf("You hit the %s with your %s!\n", rm.Monster.Name, pl.CurrentWeapon.Name)
 				damage := rand.IntN(pl.CurrentWeapon.MaxDamage-pl.CurrentWeapon.MinDamage) + pl.CurrentWeapon.MinDamage
 				monsterHp = monsterHp - damage
 			} else {
-				colour.Green.Printf("You attack the %s with you %s and miss!\n", rm.Monster.Name, pl.CurrentWeapon.Name)
+				clr.Green.Printf("You attack the %s with you %s and miss!\n", rm.Monster.Name, pl.CurrentWeapon.Name)
 			}
 
 			if monsterHp <= 0 {
-				colour.Green.Printf("The %s falls on the floor, dead.\n", rm.Monster.Name)
+				clr.Green.Printf("The %s falls on the floor, dead.\n", rm.Monster.Name)
 				winner = "player"
 			}
 		} else {
@@ -52,15 +52,15 @@ func fight(currentGame *models.Game) string {
 			mr := r - (pl.CurrentShield.Defense + pl.CurrentArmor.Defense)
 
 			if mr >= 50 {
-				colour.Red.Printf("The %s attacks and hits!\n", rm.Monster.Name)
+				clr.Red.Printf("The %s attacks and hits!\n", rm.Monster.Name)
 				damage := rand.IntN(rm.Monster.MaxDamage-rm.Monster.MinDamage) + rm.Monster.MinDamage
 				pl.HP = pl.HP - damage
 			} else {
-				colour.Green.Printf("The %s attacks and misses!\n", rm.Monster.Name)
+				clr.Green.Printf("The %s attacks and misses!\n", rm.Monster.Name)
 			}
 
 			if pl.HP <= 0 {
-				colour.Green.Printf("The %s kills you, and you fall on the floor, dead.\n", rm.Monster.Name)
+				clr.Green.Printf("The %s kills you, and you fall on the floor, dead.\n", rm.Monster.Name)
 				winner = "monster"
 			}
 		}
@@ -74,9 +74,9 @@ func fight(currentGame *models.Game) string {
 
 		// feedback on monster state
 		if monsterHp < monsterOriginalHp/2 {
-			colour.Yellow.Printf("The %s is bleeding.\n", rm.Monster.Name)
+			clr.Yellow.Printf("The %s is bleeding.\n", rm.Monster.Name)
 		} else if monsterHp < monsterOriginalHp/3 {
-			colour.Yellow.Printf("The %s is bleeding profusely, and looks to be nearly dead.\n", rm.Monster.Name)
+			clr.Yellow.Printf("The %s is bleeding profusely, and looks to be nearly dead.\n", rm.Monster.Name)
 		}
 
 		// feedback on player state
@@ -96,7 +96,7 @@ func fight(currentGame *models.Game) string {
 				return "flee"
 			}
 		} else {
-			colour.Cyan.Println("You are only lightly wounded. 'Tis but a scratch.")
+			clr.Cyan.Println("You are only lightly wounded. 'Tis but a scratch.")
 		}
 
 		time.Sleep(1 * time.Second)
