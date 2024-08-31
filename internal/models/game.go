@@ -14,14 +14,15 @@ type Game struct {
 	Rooms       map[string]Room
 	X           int
 	Y           int
+	Entrance    string
 }
 
-func NewGame(p Player) *Game {
+func NewGame(p Player, x int, y int) *Game {
 	return &Game{
 		Player:      p,
 		NumMonsters: 0,
 		Rooms:       make(map[string]Room),
-		X:           0,
-		Y:           0,
+		X:           x,
+		Y:           y,
 	}
 }

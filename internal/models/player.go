@@ -10,6 +10,8 @@ type Player struct {
 	CurrentWeapon    ArmoryItem
 	CurrentArmor     ArmoryItem
 	CurrentShield    ArmoryItem
+	CoordX           int
+	CoordY           int
 }
 
 func NewPlayer() Player {

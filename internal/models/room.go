@@ -8,6 +8,7 @@ type Room struct {
 	Smell       string
 	Items       map[string]ArmoryItem
 	Monster     *Monster
+	Location    string
 }
 
 var descriptions = []string{
@@ -39,12 +40,13 @@ var smells = []string{
 	"The smell of rancid meat suggests that something was rotting here not too long ago.",
 }
 
-func NewRoom() Room {
+func NewRoom(location string) Room {
 	return Room{
 		Description: descriptions[rand.IntN(len(descriptions))],
 		Sound:       sounds[rand.IntN(len(sounds))],
 		Smell:       smells[rand.IntN(len(smells))],
 		Items:       make(map[string]ArmoryItem),
+		Location:    location,
 	}
 }
 

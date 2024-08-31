@@ -21,10 +21,18 @@ var directions = []string{"n", "s", "e", "w"}
 func PlayGame() {
 
 	adventurer := models.NewPlayer()
-	currentGame := models.NewGame(adventurer)
-	room := generateRoom()
-	currentGame.Room = room
-	welcome()
+	currentGame := models.NewGame(adventurer, MAX_X_AXIS, MAX_Y_AXIS)
+
+	allRooms, numMonsters := createWorld(currentGame)
+	currentGame.NumMonsters = numMonsters
+	currentGame.Rooms = allRooms
+
+	entrance := "0,0"
+	currentGame.Room = currentGame.Rooms[entrance]
+	currentGame.Entrance = entrance
+	currentGame.Room.Location = entrance
+
+	welcome(currentGame)
 
 	// get the player input
 	cyan.Println("Press enter to begin...")
@@ -34,7 +42,7 @@ func PlayGame() {
 	exploreLabyrinth(currentGame)
 }
 
-func welcome() {
+func welcome(currentGame *models.Game) {
 
 	red.Println("                                                  D U N G E O N")
 	green.Println(`
@@ -44,11 +52,14 @@ func welcome() {
     and destroy the foul beasts. Armed with nothing but a bundle of torches, you descend into the labyrinth, 
     ready to do battle....
 	`)
+	fmt.Println("")
+	yellow.Printf("According to the people of Honeywood there are %d creatures in this labyrinth.\n", currentGame.NumMonsters)
+	fmt.Println("")
 }
 
-func generateRoom() models.Room {
+func generateRoom(location string) models.Room {
 
-	room := models.NewRoom()
+	room := models.NewRoom(location)
 
 	// there is a 25% chance that this room has an item
 	if rand.IntN(100) < 26 {
@@ -144,7 +155,47 @@ func exploreLabyrinth(currentGame *models.Game) {
 			showInventory(currentGame)
 			continue
 		} else if slices.Contains(directions, input) {
+			direction := input
+			if currentGame.Room.Location == currentGame.Entrance && direction == "s" {
+				yn := getYN("You are about to leave the dungeon, are you sure")
+				if yn == "yes" {
+					playAgain()
+				} else {
+					continue
+				}
+			}
+
+			if direction == "n" {
+				if currentGame.Player.CoordY < currentGame.Y {
+					currentGame.Player.CoordY = currentGame.Player.CoordY + 1
+				} else {
+					red.Println("You bump into a stone wall.")
+					continue
+				}
+			} else if direction == "s" {
+				if currentGame.Player.CoordY > currentGame.Y*-1 {
+					currentGame.Player.CoordY = currentGame.Player.CoordY - 1
+				} else {
+					red.Println("You bump into a stone wall.")
+					continue
+				}
+			} else if direction == "e" {
+				if currentGame.Player.CoordX < currentGame.X {
+					currentGame.Player.CoordX = currentGame.Player.CoordX + 1
+				} else {
+					red.Println("You bump into a stone wall.")
+					continue
+				}
+			} else if direction == "w" {
+				if currentGame.Player.CoordX > currentGame.X*-1 {
+					currentGame.Player.CoordX = currentGame.Player.CoordX - 1
+				} else {
+					red.Println("You bump into a stone wall.")
+					continue
+				}
+			}
 			cyan.Println("You move deeper into the dungeon.")
+
 		} else if input == "status" {
 			printStatus(&currentGame.Player)
 			continue
@@ -156,7 +207,10 @@ func exploreLabyrinth(currentGame *models.Game) {
 			continue
 		}
 
-		currentGame.Room = generateRoom()
+		newLocation := fmt.Sprintf("%d,%d", currentGame.Player.CoordX, currentGame.Player.CoordY)
+		currentGame.Room = currentGame.Rooms[newLocation]
+		currentGame.Room.Location = newLocation
+
 		currentGame.Room.PrintDescription()
 		currentGame.Player.Turns += 1
 
