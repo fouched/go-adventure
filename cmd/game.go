@@ -11,6 +11,7 @@ import (
 	"os"
 	"slices"
 	"strings"
+	"time"
 )
 
 var directions = []string{"n", "s", "e", "w"}
@@ -51,8 +52,24 @@ func welcome(currentGame *models.Game) {
     ready to do battle....
 	`)
 	fmt.Println("")
-	clr.Yellow.Printf("According to the people of Honeywood there are %d creatures in this labyrinth.\n", currentGame.NumMonsters)
+	clr.Green.Printf("    According to the people of Honeywood there are %d creatures in this labyrinth.\n", currentGame.NumMonsters)
 	fmt.Println("")
+	time.Sleep(1 * time.Second)
+	clr.Yellow.Println("    Something smashed into the back of your head, and you fall down senseless...")
+
+	fmt.Print("                                 ")
+	for i := 0; i < 10; i++ {
+		clr.Yellow.Print(".")
+		time.Sleep(250 * time.Millisecond)
+	}
+	fmt.Println("")
+	fmt.Println("")
+
+	clr.Green.Println("    You awaken, some unknown time later, only to discover that nearly all of your possessions are")
+	clr.Green.Println("    missing. You grit your teeth, climb to your feet, and press on, determined to complete you mission.")
+	fmt.Println("")
+	time.Sleep(1 * time.Second)
+
 }
 
 func generateRoom(location string) models.Room {
@@ -122,6 +139,9 @@ func exploreLabyrinth(currentGame *models.Game) {
 			continue
 		} else if input == "look" {
 			currentGame.Room.PrintDescription()
+			continue
+		} else if strings.HasPrefix(input, "examine") {
+			examine(input)
 			continue
 		} else if input == "map" {
 			showMap(currentGame)
@@ -203,6 +223,7 @@ func exploreLabyrinth(currentGame *models.Game) {
 			continue
 		} else if input == "q" || input == "quit" {
 			clr.Yellow.Println("Overcome with terror, you flee the dungeon.")
+			printFinalScore(currentGame)
 			playAgain()
 		} else {
 			clr.Cyan.Println("I'm not sure what you mean... type help for available commands.")
@@ -235,6 +256,24 @@ func rest(player *models.Player) {
 			player.HP = config.PLAYER_HP
 		}
 		clr.Cyan.Printf("You feel better (%d/%d) hit points.\n", player.HP, config.PLAYER_HP)
+	}
+}
+
+func examine(input string) {
+	item := strings.TrimPrefix(input, "examine ")
+	clr.Cyan.Printf("It's just a normal %s. The is nothing special about it.\n", item)
+}
+
+func printFinalScore(currentGame *models.Game) {
+	clr.Green.Printf("In %d turns, you defeated %d monsters, accumulated %d gold, and gained %d xp.\n",
+		currentGame.Player.Turns, currentGame.Player.MonstersDefeated, currentGame.Player.Treasure, currentGame.Player.XP)
+
+	if currentGame.Player.XP > 500 {
+		clr.Green.Println("Well done, adventurer.")
+	} else if currentGame.Player.XP > 250 {
+		clr.Yellow.Println("Not too bad, adventurer.")
+	} else {
+		clr.Red.Println("I guess it's amateur night.")
 	}
 }
 
@@ -527,7 +566,6 @@ func showHelp() {
     - look : look around and describe you environment
     - use / equip <item> : use an item from your inventory
     - unequip <item> : stop using an item from your inventory
-    - fight : attack a foe
     - examine <object> : examine an object more closely
     - get <item> : pick up an item
     - drop <item> : drop an item
