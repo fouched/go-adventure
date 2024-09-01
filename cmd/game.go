@@ -29,6 +29,7 @@ func PlayGame() {
 	currentGame.Entrance = entrance
 	currentGame.Room.Location = entrance
 
+	drawUI(currentGame)
 	welcome(currentGame)
 
 	// get the player input
@@ -194,10 +195,11 @@ func exploreLabyrinth(currentGame *models.Game) {
 					continue
 				}
 			}
+
 			clr.Cyan.Println("You move deeper into the dungeon.")
 
 		} else if input == "status" {
-			printStatus(&currentGame.Player)
+			printStatus(currentGame)
 			continue
 		} else if input == "q" || input == "quit" {
 			clr.Yellow.Println("Overcome with terror, you flee the dungeon.")
@@ -237,6 +239,8 @@ func rest(player *models.Player) {
 }
 
 func showMap(currentGame *models.Game) {
+
+	drawUI(currentGame)
 
 	// print top line
 	for i := 0; i < config.MAX_X_AXIS*6+3; i++ {
@@ -289,18 +293,20 @@ func showMap(currentGame *models.Game) {
 	clr.Green.Print(": Exit")
 
 	fmt.Println("")
+	fmt.Println("")
 
 }
 
-func printStatus(player *models.Player) {
+func printStatus(currentGame *models.Game) {
 
+	drawUI(currentGame)
 	clr.Cyan.Printf("You have played the game for %d turns, defeated %d monsters, and found %d gold pieces.\n",
-		player.Turns, player.MonstersDefeated, player.Treasure)
-	clr.Cyan.Printf("You have earned %d xp.\n", player.XP)
-	clr.Cyan.Printf("You have %d hit points remaining, out of 100.\n", player.HP)
-	clr.Cyan.Printf("Currently equipped weapon: %s.\n", player.CurrentWeapon.Name)
-	clr.Cyan.Printf("Currently equipped armor: %s.\n", player.CurrentArmor.Name)
-	clr.Cyan.Printf("Currently equipped shield: %s.\n", player.CurrentShield.Name)
+		currentGame.Player.Turns, currentGame.Player.MonstersDefeated, currentGame.Player.Treasure)
+	clr.Cyan.Printf("You have earned %d xp.\n", currentGame.Player.XP)
+	clr.Cyan.Printf("You have %d hit points remaining, out of 100.\n", currentGame.Player.HP)
+	clr.Cyan.Printf("Currently equipped weapon: %s.\n", currentGame.Player.CurrentWeapon.Name)
+	clr.Cyan.Printf("Currently equipped armor: %s.\n", currentGame.Player.CurrentArmor.Name)
+	clr.Cyan.Printf("Currently equipped shield: %s.\n\n", currentGame.Player.CurrentShield.Name)
 }
 
 func unequipItem(player *models.Player, item string) {
